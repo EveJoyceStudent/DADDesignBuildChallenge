@@ -252,3 +252,28 @@ Select AVG(Payment) from BOOKING;
 Select * FROM BOOKING 
 WHERE Payment>(Select AVG(Payment) from BOOKING);
 
+
+/*
+Task 5 - 
+*/
+
+GO;
+
+CREATE VIEW BOOKINGVIEW AS 
+(Select CLIENT.Surname, CLIENT.GivenName, 
+    TOUR.TourName, TOUR.Description, 
+    EVENT.EventYear, EVENT.EventMonth, EVENT.EventDay, EVENT.Fee,
+    BOOKING.DateBooked, BOOKING.Payment
+    FROM
+    (((CLIENT LEFT JOIN BOOKING
+    ON CLIENT.ClientID=BOOKING.ClientID)
+    LEFT JOIN EVENT
+    ON EVENT.TourName=BOOKING.TourName AND EVENT.EventYear=BOOKING.EventYear 
+        AND EVENT.EventMonth=BOOKING.EventMonth AND EVENT.EventDay=BOOKING.EventDay)
+    LEFT JOIN TOUR
+    ON TOUR.TourName=EVENT.TourName))
+;
+
+GO;
+
+Select * From BOOKINGVIEW;
