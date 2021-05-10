@@ -139,6 +139,9 @@ INSERT INTO CLIENT(ClientID, Surname, GivenName, Gender) VALUES
 ('2', 'Gamble', 'Ellyse', 'F'),
 ('3', 'Tan', 'Tilly', 'F');
 
+INSERT INTO CLIENT(ClientID, Surname, GivenName, Gender) VALUES
+('103681990', 'Joyce', 'Eve', 'F');
+
 /* 
 EVENT(TourName, EventYear, EventMonth, EventDay, Fee)
 PRIMARY KEY(TourName, EventYear, EventMonth, EventDay)
@@ -170,6 +173,12 @@ INSERT INTO BOOKING(ClientID, TourName, EventYear, EventMonth, EventDay, DateBoo
 (3, 'South', 2016, 'Jan', 16, '09-January-2016', 200),
 (2, 'West', 2016, 'Jan', 29, '17-December-2015', 225),
 (3, 'West', 2016, 'Jan', 29, '18-December-2015', 200);
+
+
+
+INSERT INTO BOOKING(ClientID, TourName, EventYear, EventMonth, EventDay, DateBooked, Payment) VALUES
+(103681990, 'North', 2016, 'Jan', 9, '5-Nov-2015', 200),
+(103681990, 'South', 2016, 'Jan', 16, '5-Nov-2015', 200);
 
 
 
@@ -247,7 +256,7 @@ Query 3:
 payment amount. (This query must use a sub-query.)
 */
 
-Select AVG(Payment) from BOOKING;
+-- Select AVG(Payment) from BOOKING;
 
 Select * FROM BOOKING 
 WHERE Payment>(Select AVG(Payment) from BOOKING);
@@ -348,13 +357,11 @@ select distinct EventMonth, Tourname from BOOKING;
 
 Select count(*) from BOOKING
 WHERE EventMonth='Feb' AND TourName='North';
+-- so pick a combination and check we have the correct number, yep
 
 Select * from BOOKING
 WHERE EventMonth='Feb' AND TourName='North';
-/*
-so pick a combination and check we have the correct number, as a final sanity check, 
-pick a group with low numbers and check the data manually for anything odd looking
-*/
+-- as a final sanity check, pick a group with low numbers and check the data manually for anything odd looking
 
 /*
 Query 3:
