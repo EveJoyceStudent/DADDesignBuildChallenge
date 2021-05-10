@@ -277,3 +277,106 @@ CREATE VIEW BOOKINGVIEW AS
 GO;
 
 Select * From BOOKINGVIEW;
+
+
+/*
+Task 6 - 
+*/
+
+
+/*
+Query 1:
+• Write a query that shows the client first name and surname, the tour name and description,
+the tour event year, month, day and fee, the booking date and the fee paid for the booking.
+*/
+
+Select CLIENT.Surname, CLIENT.GivenName, 
+    TOUR.TourName, TOUR.Description, 
+    EVENT.EventYear, EVENT.EventMonth, EVENT.EventDay, EVENT.Fee,
+    BOOKING.DateBooked, BOOKING.Payment
+    FROM
+    (((CLIENT LEFT JOIN BOOKING
+    ON CLIENT.ClientID=BOOKING.ClientID)
+    LEFT JOIN EVENT
+    ON EVENT.TourName=BOOKING.TourName AND EVENT.EventYear=BOOKING.EventYear 
+        AND EVENT.EventMonth=BOOKING.EventMonth AND EVENT.EventDay=BOOKING.EventDay)
+    LEFT JOIN TOUR
+    ON TOUR.TourName=EVENT.TourName);
+
+
+
+select count(*) from BOOKINGVIEW;
+select count(*) from BOOKING;
+/*
+Because of the design of the data, with all many relationships pointing at booking, 
+the number of elements in booking is the amount of things we are looking for, 
+so check that we ended up with that amount.
+*/
+
+Select count(Surname), count(GivenName), count(TourName), count(Description), count(EventYear), 
+    count(EventMonth), count(EventDay), count(Fee), count(DateBooked), count(Payment) from BOOKINGVIEW;
+-- once we know how many items, check each field for nulls, if any are found, investigate (but there are none, yay)
+
+select count(distinct Surname) from BOOKINGVIEW;
+select count(Surname) from client;
+-- As a final sanity check, do we have the correct number of clients? yes
+
+/*
+Query 2:
+• Write a query which shows the number of bookings for each (tour event) month, for each
+tour in the following example format. For example:
+EventMonth  TourName    Num Bookings
+Jan         North       1
+Jan         South       7
+Jan         West        4
+Feb         North       5
+
+(The actual results will vary. This demonstrates format only)
+
+BOOKING(ClientID, TourName, EventYear, EventMonth, EventDay, DateBooked, Payment)
+PRIMARY KEY(ClientID, TourName, EventYear, EventMonth, EventDay)
+FOREIGN KEY(ClientID) REFERENCES CLIENT
+FOREIGN Key(TourName, EventYear, EventMonth, EventDay) REFERENCES EVENT
+*/
+
+Select EventMonth, TourName, Count(*) AS 'Num Bookings'
+From BOOKING
+Group By EventMonth, TourName;
+
+select distinct EventMonth, Tourname from BOOKING;
+-- check we have all event month/tour name combinations. we do
+
+Select count(*) from BOOKING
+WHERE EventMonth='Feb' AND TourName='North';
+
+Select * from BOOKING
+WHERE EventMonth='Feb' AND TourName='North';
+/*
+so pick a combination and check we have the correct number, as a final sanity check, 
+pick a group with low numbers and check the data manually for anything odd looking
+*/
+
+/*
+Query 3:
+• Write a query which lists all bookings which have a payment amount greater than the average
+payment amount. (This query must use a sub-query.)
+*/
+
+
+Select * FROM BOOKING 
+WHERE Payment>(Select AVG(Payment) from BOOKING);
+
+
+Select AVG(Payment) from BOOKING;
+-- check the average, what is it? ok, now we know what we're checking
+
+Select count(Distinct(Payment)) FROM BOOKING;
+-- look at how many values there are to payment, only 3, low number, so the range of checks we can do is broader
+
+Select Payment, count(*) FROM BOOKING
+group by Payment
+order by Payment Desc;
+/*
+since so few values, look at the values of Payment, and how often they occur, does the average value make sense, 
+yeah totally, we can also see the 3 values we got above the average in this query, looks good.
+*/
