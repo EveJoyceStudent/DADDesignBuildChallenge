@@ -178,3 +178,77 @@ select * from CLIENT;
 select * from EVENT;
 select * from BOOKING;
 
+
+/*
+Task 4 - 
+*/
+
+/*
+Query 1:
+• Write a query that shows the client first name and surname, the tour name and description,
+the tour event year, month, day and fee, the booking date and the fee paid for the booking.
+*/
+
+/*
+TOUR(TourName, Description)
+PRIMARY KEY(TourName)
+
+CLIENT(ClientID, Surname, GivenName, Gender)
+PRIMARY KEY(ClientID)
+
+EVENT(TourName, EventYear, EventMonth, EventDay, Fee)
+PRIMARY KEY(TourName, EventYear, EventMonth, EventDay)
+FOREIGN KEY(TourName) REFERENCES TOUR
+
+BOOKING(ClientID, TourName, EventYear, EventMonth, EventDay, DateBooked, Payment)
+PRIMARY KEY(ClientID, TourName, EventYear, EventMonth, EventDay)
+FOREIGN KEY(ClientID) REFERENCES CLIENT
+FOREIGN Key(TourName, EventYear, EventMonth, EventDay) REFERENCES EVENT
+*/
+
+Select CLIENT.Surname, CLIENT.GivenName, 
+    TOUR.TourName, TOUR.Description, 
+    EVENT.EventYear, EVENT.EventMonth, EVENT.EventDay, EVENT.Fee,
+    BOOKING.DateBooked, BOOKING.Payment
+    FROM
+    (((CLIENT LEFT JOIN BOOKING
+    ON CLIENT.ClientID=BOOKING.ClientID)
+    LEFT JOIN EVENT
+    ON EVENT.TourName=BOOKING.TourName AND EVENT.EventYear=BOOKING.EventYear 
+        AND EVENT.EventMonth=BOOKING.EventMonth AND EVENT.EventDay=BOOKING.EventDay)
+    LEFT JOIN TOUR
+    ON TOUR.TourName=EVENT.TourName);
+
+/*
+Query 2:
+• Write a query which shows the number of bookings for each (tour event) month, for each
+tour in the following example format. For example:
+EventMonth  TourName    Num Bookings
+Jan         North       1
+Jan         South       7
+Jan         West        4
+Feb         North       5
+
+(The actual results will vary. This demonstrates format only)
+
+BOOKING(ClientID, TourName, EventYear, EventMonth, EventDay, DateBooked, Payment)
+PRIMARY KEY(ClientID, TourName, EventYear, EventMonth, EventDay)
+FOREIGN KEY(ClientID) REFERENCES CLIENT
+FOREIGN Key(TourName, EventYear, EventMonth, EventDay) REFERENCES EVENT
+*/
+
+Select EventMonth, TourName, Count(*) AS 'Num Bookings'
+From BOOKING
+Group By EventMonth, TourName;
+
+/*
+Query 3:
+• Write a query which lists all bookings which have a payment amount greater than the average
+payment amount. (This query must use a sub-query.)
+*/
+
+Select AVG(Payment) from BOOKING;
+
+Select * FROM BOOKING 
+WHERE Payment>(Select AVG(Payment) from BOOKING);
+
